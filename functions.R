@@ -19,10 +19,10 @@ createSine <- function(n=200, len=1, f=f, fprime=fprime, f2prime=f2prime, a=0, b
   # ellx is based on the "trig" correction
   ellx <- ell / cos(atan(abs(a*fprime(x))))
   # ellx2 is based on linear approximation of f  
-  ellx2 <- ell * sqrt(1 + a^2*fprime(x)^2)
+#   ellx2 <- ell * sqrt(1 + a^2*fprime(x)^2)
   
   # make this a data frame - ggplot2 doesn't do well with floating vectors
-  dframe <- data.frame(x=x, xstart=x, xend=x, y=fx, ystart=ystart, yend=yend, ell=ell, ellx = ellx, ellx2=ellx2)
+  dframe <- data.frame(x=x, xstart=x, xend=x, y=fx, ystart=ystart, yend=yend, ell=ell, ellx = ellx)
   
   # third adjustment is based on quadratic approximation of f.
   # this needs two parts: correction above and below f(x)  
@@ -39,8 +39,8 @@ createSine <- function(n=200, len=1, f=f, fprime=fprime, f2prime=f2prime, a=0, b
   #  lambdaminv <- -0.5*(sqrt(v^2+f2p*fp^2*ell) + v)
   lambdaminv <- 0.5*(sqrt(v^2+f2p*fp^2*ell) + v)
   
-  dframe$ellx4.l <- 0.5*abs(lambdapinv)/sqrt(v)
-  dframe$ellx4.u <- 0.5*abs(lambdaminv)/sqrt(v)
+  dframe$ellx4.l <- 0.5*ell*abs(lambdapinv)/sqrt(v)
+  dframe$ellx4.u <- 0.5*ell*abs(lambdaminv)/sqrt(v)
   #  dframe$lambdam <- 1/lambdaminv
   #  dframe$lambdap <- 1/lambdapinv
   fp <- fprime(x)
