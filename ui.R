@@ -31,8 +31,8 @@ shinyUI(pageWithSidebar(
   mainPanel(
     tabsetPanel(id="whichtab", 
                 tabPanel("Sine Illusion", plotOutput("illusion", width="auto"), value=1),
-                tabPanel("Correct X Axis", plotOutput("xcorrect", width="auto"), value=2),
-                tabPanel("Correct Y Axis", plotOutput("ycorrect", width="auto", height="600px"), value=3)#,
+                tabPanel("Correct X Axis", plotOutput("xcorrect", width="auto"), value=2, height="600px"),
+                tabPanel("Correct Y Axis", plotOutput("ycorrect", width="auto", value=3, height="600px"))#,
                 #tabPanel("Temporary Transformation", plotOutput("temptransform"), value=4)      
     )
   )

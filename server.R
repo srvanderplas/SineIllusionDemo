@@ -92,7 +92,7 @@ shinyServer(function(input, output) {
       dplot <- rbind(dframeAdj, dframeAdj1)
     }
     p <- qplot(x=x, xend=x, y=seg.ystart, yend=seg.yend, geom="segment", data=dplot) +
-      theme_bw() + coord_equal(ratio=1) + facet_grid(type~adj, scales="free_y", space="free_y") +
+      theme_bw() + facet_grid(type~adj, scales="free_y", space="free_y") +
       scale_x_continuous(breaks=seq(-pi, pi, by=pi/2), 
                          labels=c(expression(-pi), expression(paste(-pi, "/2")), 0, 
                                   expression(paste(pi,"/2")), expression(pi))) +
