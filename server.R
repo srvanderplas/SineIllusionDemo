@@ -7,7 +7,7 @@ source("./functions.R")
 shinyServer(function(input, output) {
   suppressMessages(library(ggplot2))
   
-  output$illusion <- renderPlot({
+  output$illusion <- reactivePlot(function() {
     f <- function(x) input$amp*sin(x)
     fprime <- function(x) input$amp*cos(x)
     f2prime <- function(x) -input$amp*sin(x)
@@ -26,7 +26,7 @@ shinyServer(function(input, output) {
     print(p1)
   })
   
-  output$xcorrect <- renderPlot({
+  output$xcorrect <- reactivePlot(function() {
     f <- function(x) input$amp*sin(x)
     fprime <- function(x) input$amp*cos(x)
     f2prime <- function(x) -input$amp*sin(x)
@@ -38,22 +38,30 @@ shinyServer(function(input, output) {
                                rep(paste("X corrected, weight =", input$weight), times=length(minor.axis.correction))))
     dframeAdj <- rbind(cbind(dframe, adj="Correction: None"), cbind(adjx(dframe, fprime=fprime, w=input$weight), adj=paste("X corrected, weight =", input$weight)))
     
-    pa <- qplot(x=xstart, xend=xend, y=ystart, yend=yend, geom="segment", data=dframe, main="Correction: None") + theme_bw() +
-            scale_x_continuous(breaks=seq(-pi, pi, by=pi/2), minor_breaks=minor.axis.correction,
-                               labels=c(expression(-pi), expression(paste(-pi, "/2")), 0, expression(paste(pi,"/2")), expression(pi))) +
-            geom_point(data=subset(dots, adj=="Correction: None"), aes(x=x, y=y), inherit.aes=FALSE) +
-            coord_equal(ratio=1) + xlab("x") + ylab("y") 
-    pb <- qplot(x=xstart, xend=xend, y=ystart, yend=yend, geom="segment", data=adjx(dframe, fprime=fprime, w=input$weight),
-                main=paste("Correction: X, weight =", input$weight)) + theme_bw() +
-            scale_x_continuous(breaks=seq(-pi, pi, by=pi/2), minor_breaks=minor.axis.correction,
-                               labels=c(expression(-pi), expression(paste(-pi, "/2")), 0, expression(paste(pi,"/2")), expression(pi))) +
-            geom_point(data=subset(dots, adj!="Correction: None"), aes(x=x, y=y), inherit.aes=FALSE) +
-            coord_equal(ratio=1) + xlab("x") + ylab("y")
-    p1 <- grid.arrange(pa, pb, nrow=1)
-    print(p1)
+    p <- qplot(x=xstart, xend=xend, y=ystart, yend=yend, geom="segment", data=dframeAdj) +
+      facet_grid(.~adj) + theme_bw() +
+      scale_x_continuous(breaks=seq(-pi, pi, by=pi/2), minor_breaks=minor.axis.correction,
+                         labels=c(expression(-pi), expression(paste(-pi, "/2")), 0, expression(paste(pi,"/2")), expression(pi))) +
+      geom_point(data=dots, aes(x=x, y=y), inherit.aes=FALSE) +
+      coord_equal(ratio=1) + xlab("x") + ylab("y") 
+    
+    #     pa <- qplot(x=xstart, xend=xend, y=ystart, yend=yend, geom="segment", data=dframe, main="Correction: None") + theme_bw() +
+    #             scale_x_continuous(breaks=seq(-pi, pi, by=pi/2), minor_breaks=minor.axis.correction,
+    #                                labels=c(expression(-pi), expression(paste(-pi, "/2")), 0, expression(paste(pi,"/2")), expression(pi))) +
+    #             geom_point(data=subset(dots, adj=="Correction: None"), aes(x=x, y=y), inherit.aes=FALSE) +
+    #             coord_equal(ratio=1) + xlab("x") + ylab("y") 
+    #     pb <- qplot(x=xstart, xend=xend, y=ystart, yend=yend, geom="segment", data=adjx(dframe, fprime=fprime, w=input$weight),
+    #                 main=paste("Correction: X, weight =", input$weight)) + theme_bw() +
+    #             scale_x_continuous(breaks=seq(-pi, pi, by=pi/2), minor_breaks=minor.axis.correction,
+    #                                labels=c(expression(-pi), expression(paste(-pi, "/2")), 0, expression(paste(pi,"/2")), expression(pi))) +
+    #             geom_point(data=subset(dots, adj!="Correction: None"), aes(x=x, y=y), inherit.aes=FALSE) +
+    #             coord_equal(ratio=1) + xlab("x") + ylab("y")
+    #     p1 <- grid.arrange(pa, pb, nrow=1)
+    #     print(p1)
+    print(p)
   })
   
-  output$ycorrect <- renderPlot({
+  output$ycorrect <- reactivePlot(function() {
     f <- function(x) input$amp*sin(x)
     fprime <- function(x) input$amp*cos(x)
     f2prime <- function(x) -input$amp*sin(x)
@@ -62,7 +70,7 @@ shinyServer(function(input, output) {
     rat <- input$ell/(2*input$amp+input$ell)
     
     dframeAdj <- cbind(rbind(dframe, dframe), with(dframe, rbind(data.frame(seg.ystart=y-ell/2, seg.yend=y+ell/2, type="Segment"), data.frame(seg.ystart=ell/2, seg.yend=-ell/2, type="Adjustment"))), adj="Original Data")
-
+    
     if(corr==4){
       dframeAdj1 <- adjQuad(dframe, f, fprime, f2prime)
       title = "Correction: Quadratic"
@@ -88,7 +96,7 @@ shinyServer(function(input, output) {
       scale_x_continuous(breaks=seq(-pi, pi, by=pi/2), 
                          labels=c(expression(-pi), expression(paste(-pi, "/2")), 0, 
                                   expression(paste(pi,"/2")), expression(pi))) +
-      xlab("x") + ylab("y")
+      xlab("x") + ylab("y") + coord_equal(ratio=1)
     print(p)
   })
 })
