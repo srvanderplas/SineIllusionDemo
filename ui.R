@@ -12,8 +12,8 @@ shinyUI(pageWithSidebar(
                 min = 20, 
                 max = 100, 
                 value = 40, step=5),
-    sliderInput("ell", "Line Length:", min=.5, max=10, value=1, step=.1),
-    sliderInput("amp", "Amplitude:", min=.5, max=10, value=1, step=.1),
+    sliderInput("ell", "Line Length:", min=.5, max=5, value=1, step=.1),
+    sliderInput("amp", "Amplitude:", min=.5, max=5, value=1, step=.1),
     conditionalPanel(condition="input.whichtab==1", 
                      checkboxInput("hidelines", "Hide lines", FALSE)
     ),
