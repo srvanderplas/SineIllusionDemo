@@ -52,7 +52,7 @@ adjx <- function(df, fprime=fprime, w=1){
   df
 }
 
-adjNone <- function(df, f=f, fprime=fprime, f2prime=f2prime){
+adjNone <- function(df, f=f, fprime=fprime, f2prime=f2prime, w = 1){
   df2 <- cbind(df, 
                sec.ell1 = df$ell/2, 
                sec.ell2 = df$ell/2)
@@ -63,7 +63,7 @@ adjNone <- function(df, f=f, fprime=fprime, f2prime=f2prime){
   )
 }
 
-adjLinear <- function(df, f=f, fprime=fprime, f2prime=f2prime){
+adjLinear <- function(df, f=f, fprime=fprime, f2prime=f2prime, w = 1){
   dy <- diff(range(df$y))
   dx <- diff(range(df$x))
   a <- dy/(dy+df$ell)
@@ -71,33 +71,33 @@ adjLinear <- function(df, f=f, fprime=fprime, f2prime=f2prime){
                sec.ell1 = df$ell/2*sqrt(1+a^2*fprime(df$x)^2), 
                sec.ell2 = df$ell/2*sqrt(1+a^2*fprime(df$x)^2))
   with(df2, cbind(rbind(df, df), 
-                  rbind(data.frame(seg.ystart=y-sec.ell1, seg.yend=y+sec.ell2, type="Segment"), 
-                        data.frame(seg.ystart=-sec.ell1, seg.yend=+sec.ell2, type="Adjustment")), 
+                  rbind(data.frame(seg.ystart=y-(w *sec.ell1 + (1-w)*ell), seg.yend=y+(w *sec.ell2 + (1-w)*ell), type="Segment"), 
+                        data.frame(seg.ystart=-(w *sec.ell1 + (1-w)*ell), seg.yend=+(w *sec.ell2 + (1-w)*ell), type="Adjustment")), 
                   adj="Correction: Linear")
   )
 }
 
 
-adjGeom <- function(df, f=f, fprime=fprime, f2prime=f2prime){
+adjGeom <- function(df, f=f, fprime=fprime, f2prime=f2prime, w = 1){
   cbind(rbind(df, df), with(df, 
-                            rbind(data.frame(seg.ystart=y+ellx2/2, 
-                                             seg.yend=y-ellx2/2,
+                            rbind(data.frame(seg.ystart=y+(w*ellx2 + (1-w)*ell)/2, 
+                                             seg.yend=y-(w*ellx2 + (1-w)*ell)/2,
                                              type="Segment"),
-                                  data.frame(seg.ystart= ellx2/2, 
-                                             seg.yend=-ellx2/2,
+                                  data.frame(seg.ystart= (w*ellx2 + (1-w)*ell)/2, 
+                                             seg.yend=-(w*ellx2 + (1-w)*ell)/2,
                                              type="Adjustment"))), 
         adj="Correction: Trigonometric")
 }
 
 
-adjQuad <- function(df, f=f, fprime=fprime, f2prime=f2prime){
+adjQuad <- function(df, f=f, fprime=fprime, f2prime=f2prime, w = 1){
   
   cbind(rbind(df, df), with(df, 
-                            rbind(data.frame(seg.ystart=y+ellx4.u, 
-                                             seg.yend=y-ellx4.l,
+                            rbind(data.frame(seg.ystart=y+(w*ellx4.u + (1-w)*ell/2), 
+                                             seg.yend=y-(w*ellx4.l + (1-w)*ell/2),
                                              type="Segment"),
-                                  data.frame(seg.ystart= ellx4.u, 
-                                             seg.yend=-ellx4.l,
+                                  data.frame(seg.ystart= (w*ellx4.u + (1-w)*ell/2), 
+                                             seg.yend=-(w*ellx4.l + (1-w)*ell/2),
                                              type="Adjustment"))), 
         adj="Correction: Quadratic")
 }

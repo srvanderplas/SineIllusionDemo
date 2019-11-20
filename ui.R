@@ -21,10 +21,9 @@ shinyUI(pageWithSidebar(
                      radioButtons("correct", "Correction Type:", c("No Correction" = "none", 
                                                                    "Trigonometry Correction" = "geom", 
                                                                    # "Linear Correction" = "linear", 
-                                                                   "Quadratic Correction" = "quad"), 
-                                  selected="No Correction")
+                                                                   "Quadratic Correction" = "quad"))
     ),
-    conditionalPanel(condition="input.whichtab==2", 
+    conditionalPanel(condition="input.whichtab!= 1", 
                      sliderInput("weight", "Shrink by 1-w", min=0, max=1, value=1, step=.05)
     )
   ),
